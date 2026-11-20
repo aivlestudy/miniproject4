@@ -1,7 +1,7 @@
 #root { width: 100%; max-width: none; margin: 0; border: 0; display: block; text-align: left; }
 .book-app { min-height: 100vh; background: white; color: #27323a; font: 15px/1.5 Arial, 'Malgun Gothic', sans-serif; }
 .book-app * { box-sizing: border-box; }
-.book-app button, .book-app input, .book-app textarea { font: inherit; }
+.book-app button, .book-app input, .book-app textarea, .book-app select { font: inherit; }
 .book-app button { cursor: pointer; }
 .book-app h1, .book-app h2, .book-app p { color: inherit; margin: 0; }
 .book-app h1 { font-size: 27px; font-weight: 700; letter-spacing: -.04em; }
@@ -44,14 +44,18 @@
 .card-body strong { font-size: 17px; }
 .card-body span { color: #68737a; min-height: 45px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
 .card-body small { color: #8d969c; }
+.book-meta { display: flex; align-items: center; gap: 8px; }
+.card-body .book-meta { min-height: 0; }
+.category { font-style: normal; font-size: 12px; font-weight: 700; color: #1976d2; background: #1976d214; padding: 2px 8px; border-radius: 10px; }
+.rating { color: #f5a623; letter-spacing: 1px; }
 .empty { text-align: center; padding: 65px 20px; border: 1px dashed #cfd9dd; border-radius: 6px; }
 .empty p { color: #748087; margin-top: 6px; }
 .form-page { max-width: 680px; margin: auto; }
 .form-page h1 { text-align: center; margin-bottom: 22px; }
 .form-page form { display: flex; flex-direction: column; border: 1px solid #e5e7e9; border-radius: 6px; box-shadow: 0 2px 8px #0001; padding: 23px; }
 .form-page label { font-weight: 700; margin-bottom: 7px; }
-.form-page input, .form-page textarea { width: 100%; padding: 10px 12px; margin-bottom: 20px; background: white; color: #27323a; border: 1px solid #cfd5da; border-radius: 4px; outline: none; }
-.form-page input:focus, .form-page textarea:focus { border-color: #1976d2; box-shadow: 0 0 0 3px #1976d222; }
+.form-page input, .form-page textarea, .form-page select { width: 100%; padding: 10px 12px; margin-bottom: 20px; background: white; color: #27323a; border: 1px solid #cfd5da; border-radius: 4px; outline: none; }
+.form-page input:focus, .form-page textarea:focus, .form-page select:focus { border-color: #1976d2; box-shadow: 0 0 0 3px #1976d222; }
 .form-page textarea { min-height: 180px; resize: vertical; }
 .form-actions { display: flex; justify-content: flex-end; gap: 8px; }
 .detail-heading { display: flex; align-items: center; justify-content: space-between; gap: 12px; border-bottom: 1px solid #e4e7e9; padding-bottom: 15px; margin-bottom: 25px; }
