@@ -1,0 +1,6 @@
+{
+  "books": [
+    { "id": "1", "title": "클린 코드", "author": "로버트 C. 마틴" },
+    { "id": "2", "title": "모던 자바스크립트 Deep Dive", "author": "이웅모" }
+  ]
+}
