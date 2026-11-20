@@ -42,7 +42,7 @@ function App() {
     const content = form.content.trim()
     if (!title || !content) { setNotice('제목과 내용을 입력해 주세요.'); return }
     const now = new Date().toISOString()
-    const body = { title, author, content, coverImageUrl: form.coverImageUrl.trim(), updatedAt: now }
+    const body = { title, author, content, coverImageUrl: form.coverImageUrl.trim(), rating: Number(form.rating), category: form.category, updatedAt: now }
     try {
       const response = await fetch(selected ? API + '/' + selected.id : API, {
         method: selected ? 'PATCH' : 'POST',
