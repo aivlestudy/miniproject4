@@ -1,4 +1,5 @@
 import BookCover from './BookCover'
+import RatingStars from './RatingStars'
 import formatDate from '../utils/formatDate'
 
 // 도서 상세 화면 (수정/삭제 + AI 표지 생성 영역)
@@ -21,6 +22,7 @@ function BookDetail({ book, onEdit, onDelete, onBack, onGenerateCover }) {
         </div>
         <div className="description">
           <h2>책 내용</h2>
+          <p className="book-meta">{book.category && <em className="category">{book.category}</em>}<RatingStars rating={book.rating} /></p>
           {book.author && <p>저자: {book.author}</p>}
           <p>{book.content}</p>
         </div>
