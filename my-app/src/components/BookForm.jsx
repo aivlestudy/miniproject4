@@ -1,16 +1,27 @@
 import { useState } from 'react'
+import Box from '@mui/material/Box'
+import Typography from '@mui/material/Typography'
+import TextField from '@mui/material/TextField'
+import MenuItem from '@mui/material/MenuItem'
+import Rating from '@mui/material/Rating'
+import Button from '@mui/material/Button'
+import FormHelperText from '@mui/material/FormHelperText'
+import OpenBook from './OpenBook'
+import BookCover from './BookCover'
+import CATEGORIES from '../utils/categories'
 
-const CATEGORIES = ['소설', '에세이', 'IT', '과학', '기타']
 const TITLE_MAX = 50
 const CONTENT_MIN = 10
 const CONTENT_MAX = 1000
-// 등록/수정 폼 (입력 state는 폼 안에, 저장은 App에 알리기)
+
+// 등록/수정 폼: 펼친 책 (왼쪽: 표지 미리보기 / 오른쪽: 입력칸)
+// 입력 state는 폼 안에, 저장은 App에 알리기
 function BookForm({ book, onSubmit, onCancel }) {
   const [form, setForm] = useState({
     title: book?.title || '',
     author: book?.author || '',
     content: book?.content || '',
-    coverImageUrl: book?.coverImageUrl || '',
+    coverImageUrl: book?.coverImageUrl || '', // 입력칸은 없지만 수정 시 기존 표지 유지
     rating: book?.rating || '',
     category: book?.category || '',
   })
@@ -48,91 +59,56 @@ function BookForm({ book, onSubmit, onCancel }) {
     onSubmit(form)
   }
 
-  return <section className="form-page">
-    <h1>{book ? '도서 수정' : '새 도서 등록'}</h1>
-    <form noValidate onSubmit={handleSubmit}>
-      <div className="form-field">
-        <label htmlFor="title">제목</label>
-        <input
-          id="title"
-          value={form.title}
-          onChange={(event) => handleChange('title', event.target.value)}
-          placeholder="도서 제목을 입력하세요"
-          required
-          aria-invalid={!!errors.title}
-          aria-describedby={errors.title ? 'title-error' : undefined}
-        />
-        {errors.title && <p id="title-error" className="error-message">{errors.title}</p>}
-      </div>
-      <div className="form-field">
-        <label htmlFor="author">저자</label>
-        <input
-          id="author"
-          value={form.author}
-          onChange={(event) => handleChange('author', event.target.value)}
-          placeholder="저자를 입력하세요"
-          required
-          aria-invalid={!!errors.author}
-          aria-describedby={errors.author ? 'author-error' : undefined}
-        />
-        {errors.author && <p id="author-error" className="error-message">{errors.author}</p>}
-      </div>
-      <div className="form-field">
-        <label htmlFor="category">카테고리</label>
-        <select
-          id="category"
-          value={form.category}
-          onChange={(event) => handleChange('category', event.target.value)}
-          required
-          aria-invalid={!!errors.category}
-          aria-describedby={errors.category ? 'category-error' : undefined}
-        >
-          <option value="">카테고리를 선택하세요</option>
-          {CATEGORIES.map((category) => <option key={category} value={category}>{category}</option>)}
-        </select>
-        {errors.category && <p id="category-error" className="error-message">{errors.category}</p>}
-      </div>
-      <div className="form-field">
-        <label htmlFor="rating">별점</label>
-        <select
-          id="rating"
-          value={form.rating}
-          onChange={(event) => handleChange('rating', event.target.value)}
-          required
-          aria-invalid={!!errors.rating}
-          aria-describedby={errors.rating ? 'rating-error' : undefined}
-        >
-          <option value="">별점을 선택하세요</option>
-          {[5, 4, 3, 2, 1].map((score) => <option key={score} value={score}>{'★'.repeat(score)} ({score}점)</option>)}
-        </select>
-        {errors.rating && <p id="rating-error" className="error-message">{errors.rating}</p>}
-      </div>
-      <div className="form-field">
-        <div className="field-header">
-          <label htmlFor="content">내용</label>
-          <span className="char-count">{form.content.length} / {CONTENT_MAX}</span>
-        </div>
-        <textarea
-          id="content"
-          value={form.content}
-          onChange={(event) => handleChange('content', event.target.value)}
-          placeholder="도서의 내용을 입력하세요"
-          rows="8"
-          required
-          maxLength={CONTENT_MAX}
-          aria-invalid={!!errors.content}
-          aria-describedby={errors.content ? 'content-error' : undefined}
-        />
-        {errors.content && <p id="content-error" className="error-message">{errors.content}</p>}
-      </div>
-      <label htmlFor="cover">표지 이미지 URL (선택)</label>
-      <input id="cover" type="url" value={form.coverImageUrl} onChange={(event) => setForm({ ...form, coverImageUrl: event.target.value })} placeholder="https://example.com/cover.jpg" />
-      <div className="form-actions">
-        <button type="button" className="button light" onClick={onCancel}>취소</button>
-        <button className="button primary">저장</button>
-      </div>
-    </form>
-  </section>
+  const left = <>
+    <Typography variant="overline" color="text.secondary">표지 미리보기</Typography>
+    <BookCover book={form} width={220} />
+    <Typography variant="caption" color="text.secondary" sx={{ textAlign: 'center' }}>
+      저장한 뒤 상세 화면에서 AI 표지를 만들 수 있어요.
+    </Typography>
+  </>
+
+  const right = <Box component="form" noValidate onSubmit={handleSubmit} sx={{ display: 'flex', flexDirection: 'column', gap: 2.5 }}>
+    <Typography variant="h5" component="h1">{book ? '책 정보 고치기' : '새 책 꽂기'}</Typography>
+    <TextField
+      id="title" label="제목" required value={form.title}
+      onChange={(event) => handleChange('title', event.target.value)}
+      error={!!errors.title} helperText={errors.title}
+    />
+    <TextField
+      id="author" label="저자" required value={form.author}
+      onChange={(event) => handleChange('author', event.target.value)}
+      error={!!errors.author} helperText={errors.author}
+    />
+    <TextField
+      id="category" select label="카테고리" required value={form.category}
+      onChange={(event) => handleChange('category', event.target.value)}
+      error={!!errors.category} helperText={errors.category}
+    >
+      {CATEGORIES.map((category) => <MenuItem key={category} value={category}>{category}</MenuItem>)}
+    </TextField>
+    <Box id="rating" tabIndex={-1} sx={{ outline: 'none' }}>
+      <Typography component="legend" variant="body2" color={errors.rating ? 'error' : 'text.secondary'}>별점 *</Typography>
+      <Rating
+        name="rating" size="large" value={Number(form.rating) || null}
+        sx={{ color: 'secondary.main', '& .MuiRating-iconEmpty': { color: '#d6d3cc' } }}
+        onChange={(event, value) => handleChange('rating', value || '')}
+      />
+      {errors.rating && <FormHelperText error>{errors.rating}</FormHelperText>}
+    </Box>
+    <TextField
+      id="content" label="내용" required multiline minRows={6} value={form.content}
+      onChange={(event) => handleChange('content', event.target.value)}
+      error={!!errors.content}
+      helperText={errors.content || `${form.content.length} / ${CONTENT_MAX}`}
+      slotProps={{ htmlInput: { maxLength: CONTENT_MAX } }}
+    />
+    <Box sx={{ display: 'flex', gap: 1, justifyContent: 'flex-end' }}>
+      <Button onClick={onCancel}>취소</Button>
+      <Button type="submit" variant="contained">{book ? '저장' : '꽂기'}</Button>
+    </Box>
+  </Box>
+
+  return <OpenBook left={left} right={right} />
 }
 
 export default BookForm
