@@ -14,6 +14,7 @@ function App() {
   const [selectedId, setSelectedId] = useState(null)
   const [search, setSearch] = useState('')
   const [category, setCategory] = useState('전체')
+  const [sort, setSort] = useState('newest')
   const [notice, setNotice] = useState('')
   const [loading, setLoading] = useState(true)
   const [generatingId, setGeneratingId] = useState(null)
@@ -21,6 +22,13 @@ function App() {
   // 검색어로 거르기 → 카테고리로 거르기
   const searched = books.filter((book) => (book.title + book.author + book.content).toLowerCase().includes(search.toLowerCase()))
   const filtered = searched.filter((book) => category === '전체' || book.category === category)
+  // 정렬 (원본을 바꾸지 않도록 복사본을 정렬)
+  const sorted = [...filtered].sort((a, b) => {
+    if (sort === 'oldest') return a.createdAt.localeCompare(b.createdAt)
+    if (sort === 'rating') return b.rating - a.rating
+    if (sort === 'title') return a.title.localeCompare(b.title, 'ko')
+    return b.createdAt.localeCompare(a.createdAt) // 최신순
+  })
 
   // 도서 목록 불러오기 (GET)
   useEffect(() => {
@@ -120,7 +128,7 @@ function App() {
   return <>
     <Header page={page} onNavigate={go} />
     <Container component="main" maxWidth="lg" sx={{ py: 4 }}>
-      {page === 'list' && <BookList books={filtered} searchedBooks={searched} loading={loading} search={search} onSearch={setSearch} category={category} onCategory={setCategory} onSelect={handleSelect} onCreate={handleCreate} />}
+      {page === 'list' && <BookList books={sorted} searchedBooks={searched} loading={loading} search={search} onSearch={setSearch} category={category} onCategory={setCategory} sort={sort} onSort={setSort} onSelect={handleSelect} onCreate={handleCreate} />}
       {page === 'form' && <BookForm book={selected} onSubmit={handleSave} onCancel={() => go(selected ? 'detail' : 'list')} />}
       {page === 'detail' && selected && <BookDetail book={selected} onEdit={() => go('form')} onDelete={handleDelete} onGenerateCover={handleGenerateCover} coverBusy={generatingId !== null} generating={generatingId === selected.id} />}
     </Container>
