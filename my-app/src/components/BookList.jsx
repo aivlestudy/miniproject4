@@ -1,4 +1,5 @@
 import Box from '@mui/material/Box'
+import Alert from '@mui/material/Alert'
 import TextField from '@mui/material/TextField'
 import InputAdornment from '@mui/material/InputAdornment'
 import Typography from '@mui/material/Typography'
@@ -10,12 +11,12 @@ import CATEGORIES from '../utils/categories'
 import BookItem from './BookItem'
 import AddBookSlot from './AddBookSlot'
 
-// 선반 한 칸 높이 264px 중 책 바로 아래(204~220px)에 나무 선반을 그림
-const SHELF_BACKGROUND = 'repeating-linear-gradient(to bottom, transparent 0 204px, #e2cfae 204px 212px, #cdb18a 212px 220px, rgba(27,42,74,.08) 220px 224px, transparent 224px 264px)'
+// 선반 한 칸 높이 280px 중 책 바로 아래(204~220px)에 나무 선반을 그림 (BookItem 높이와 맞춤)
+const SHELF_BACKGROUND = 'repeating-linear-gradient(to bottom, transparent 0 204px, #e2cfae 204px 212px, #cdb18a 212px 220px, rgba(27,42,74,.08) 220px 224px, transparent 224px 280px)'
 
 // 첫 화면: 서가 (검색 + 책 + 빈 자리)
 // searchedBooks: 검색어만 적용한 목록 (탭별 권수 계산용) / books: 검색어 + 카테고리 + 정렬 적용한 목록
-function BookList({ books, searchedBooks, loading, search, onSearch, category, onCategory, sort, onSort, onSelect, onCreate }) {
+function BookList({ books, searchedBooks, loading, error, search, onSearch, category, onCategory, sort, onSort, onSelect, onCreate }) {
   // 탭별 권수
   function countOf(item) {
     return item === '전체' ? searchedBooks.length : searchedBooks.filter((book) => book.category === item).length
@@ -54,10 +55,15 @@ function BookList({ books, searchedBooks, loading, search, onSearch, category, o
       </Box>
     </Box>
 
+    {/* 상태별 화면: 로딩 → 에러 → (빈 목록 안내 +) 서가 */}
     {loading
       ? <Box sx={{ display: 'flex', justifyContent: 'center', py: 8 }}><CircularProgress /></Box>
+      : error
+      ? <Alert severity="error" sx={{ maxWidth: 600, mx: 'auto' }}>{error}</Alert>
       : <>
-        {books.length === 0 && (search || category !== '전체') && <Typography color="text.secondary" sx={{ mb: 2, textAlign: 'center' }}>조건에 맞는 책이 없어요.</Typography>}
+        {books.length === 0 && <Typography color="text.secondary" sx={{ mb: 2, textAlign: 'center' }}>
+          {search || category !== '전체' ? '조건에 맞는 책이 없어요.' : '아직 꽂힌 책이 없어요. 첫 책을 꽂아 보세요.'}
+        </Typography>}
         <Box sx={{
           // 칸 묶음은 가운데, 책은 왼쪽부터 채움 (마지막 줄도 왼쪽에 붙음)
           display: 'grid', gridTemplateColumns: 'repeat(auto-fill, 124px)', justifyContent: 'center', columnGap: 1, px: 1,
