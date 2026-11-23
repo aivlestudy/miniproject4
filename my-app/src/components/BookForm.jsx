@@ -119,7 +119,7 @@ function BookForm({ book, onSubmit, onCancel }) {
           placeholder="도서의 내용을 입력하세요"
           rows="8"
           required
-          maxLength={TITLE_MAX}
+          maxLength={CONTENT_MAX}
           aria-invalid={!!errors.content}
           aria-describedby={errors.content ? 'content-error' : undefined}
         />
