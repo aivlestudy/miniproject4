@@ -1,7 +1,9 @@
 import { useEffect, useState } from 'react'
-import './App.css'
+import Box from '@mui/material/Box'
+import Alert from '@mui/material/Alert'
+import Fade from '@mui/material/Fade'
+import useMediaQuery from '@mui/material/useMediaQuery'
 import Header from './components/Header'
-import Home from './components/Home'
 import BookList from './components/BookList'
 import BookForm from './components/BookForm'
 import BookDetail from './components/BookDetail'
@@ -10,14 +12,26 @@ const API = 'http://localhost:3000/books'
 
 function App() {
   const [books, setBooks] = useState([])
-  const [page, setPage] = useState('home')
+  const reduceMotion = useMediaQuery('(prefers-reduced-motion: reduce)') // 움직임 줄이기 설정이면 전환 끄기
+  const [page, setPage] = useState('list')
   const [selectedId, setSelectedId] = useState(null)
   const [search, setSearch] = useState('')
+  const [category, setCategory] = useState('전체')
+  const [sort, setSort] = useState('latest')
   const [notice, setNotice] = useState('')
   const [loading, setLoading] = useState(true)
   const [generatingId, setGeneratingId] = useState(null)
   const selected = books.find((book) => String(book.id) === String(selectedId))
-  const filtered = books.filter((book) => (book.title + book.author + book.content).toLowerCase().includes(search.toLowerCase()))
+  // 검색어 + 카테고리로 거르기 (Array.filter)
+  const filtered = books
+    .filter((book) => (book.title + book.author + book.content).toLowerCase().includes(search.toLowerCase()))
+    .filter((book) => category === '전체' || book.category === category)
+  // 정렬 (원본 배열은 건드리지 않게 복사해서 정렬)
+  const sorted = [...filtered].sort((a, b) => {
+    if (sort === 'rating') return (b.rating || 0) - (a.rating || 0)
+    if (sort === 'title') return a.title.localeCompare(b.title, 'ko')
+    return new Date(b.createdAt) - new Date(a.createdAt) // 최신 등록순
+  })
 
   // 도서 목록 불러오기 (GET)
   useEffect(() => {
@@ -114,16 +128,20 @@ function App() {
     }
   }
 
-  return <div className="book-app">
-    <Header onNavigate={go} onCreate={handleCreate} />
-    <main className="page-content">
-      {notice && <p className="notice" role="status">{notice}</p>}
-      {page === 'home' && <Home onNavigate={go} />}
-      {page === 'list' && <BookList books={filtered} loading={loading} search={search} onSearch={setSearch} onSelect={handleSelect} onCreate={handleCreate} />}
-      {page === 'form' && <BookForm book={selected} onSubmit={handleSave} onCancel={() => go(selected ? 'detail' : 'list')} />}
-      {page === 'detail' && selected && <BookDetail book={selected} onEdit={() => go('form')} onDelete={handleDelete} onBack={() => go('list')} onGenerateCover={handleGenerateCover} coverBusy={generatingId !== null} generating={generatingId === selected.id} />}
-    </main>
-  </div>
+  return <Box>
+    <Header page={page} onNavigate={go} onCreate={handleCreate} />
+    <Box component="main" sx={{ maxWidth: 1170, mx: 'auto', px: 2, pt: 5, pb: 10 }}>
+      {notice && <Alert icon={false} role="status" sx={{ mb: 3, bgcolor: '#F7F7F7', color: 'text.primary' }}>{notice}</Alert>}
+      {/* 화면이 바뀔 때마다 key가 바뀌어서 다시 서서히 나타남 */}
+      <Fade key={page} in timeout={reduceMotion ? 0 : 200}>
+        <Box>
+          {page === 'list' && <BookList books={sorted} loading={loading} search={search} onSearch={setSearch} category={category} onCategory={setCategory} sort={sort} onSort={setSort} onSelect={handleSelect} onCreate={handleCreate} />}
+          {page === 'form' && <BookForm book={selected} onSubmit={handleSave} onCancel={() => go(selected ? 'detail' : 'list')} />}
+          {page === 'detail' && selected && <BookDetail book={selected} onEdit={() => go('form')} onDelete={handleDelete} onBack={() => go('list')} onGenerateCover={handleGenerateCover} coverBusy={generatingId !== null} generating={generatingId === selected.id} />}
+        </Box>
+      </Fade>
+    </Box>
+  </Box>
 }
 
 export default App

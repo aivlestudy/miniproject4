@@ -1,7 +1,9 @@
-// 별점 표시 (예: 4 → ★★★★☆)
+import Box from '@mui/material/Box'
+
+// 별점 표시 (리디처럼 빨간 별 하나 + 점수, 예: 4 → ★ 4.0)
 function RatingStars({ rating }) {
   if (!rating) return null
-  return <span className="rating" aria-label={'별점 ' + rating + '점'}>{'★'.repeat(rating) + '☆'.repeat(5 - rating)}</span>
+  return <Box component="span" aria-label={'별점 ' + rating + '점'} sx={{ color: '#DC3232', fontSize: 13, fontWeight: 700 }}>★ {Number(rating).toFixed(1)}</Box>
 }
 
 export default RatingStars

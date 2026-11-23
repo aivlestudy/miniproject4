@@ -1,6 +1,11 @@
 import { useState } from 'react'
+import { CATEGORIES } from '../utils/categories'
+import Box from '@mui/material/Box'
+import Typography from '@mui/material/Typography'
+import Button from '@mui/material/Button'
+import TextField from '@mui/material/TextField'
+import MenuItem from '@mui/material/MenuItem'
 
-const CATEGORIES = ['소설', '에세이', 'IT', '과학', '기타']
 const TITLE_MAX = 50
 const CONTENT_MIN = 10
 const CONTENT_MAX = 1000
@@ -48,91 +53,79 @@ function BookForm({ book, onSubmit, onCancel }) {
     onSubmit(form)
   }
 
-  return <section className="form-page">
-    <h1>{book ? '도서 수정' : '새 도서 등록'}</h1>
-    <form noValidate onSubmit={handleSubmit}>
-      <div className="form-field">
-        <label htmlFor="title">제목</label>
-        <input
-          id="title"
-          value={form.title}
-          onChange={(event) => handleChange('title', event.target.value)}
-          placeholder="도서 제목을 입력하세요"
-          required
-          aria-invalid={!!errors.title}
-          aria-describedby={errors.title ? 'title-error' : undefined}
-        />
-        {errors.title && <p id="title-error" className="error-message">{errors.title}</p>}
-      </div>
-      <div className="form-field">
-        <label htmlFor="author">저자</label>
-        <input
-          id="author"
-          value={form.author}
-          onChange={(event) => handleChange('author', event.target.value)}
-          placeholder="저자를 입력하세요"
-          required
-          aria-invalid={!!errors.author}
-          aria-describedby={errors.author ? 'author-error' : undefined}
-        />
-        {errors.author && <p id="author-error" className="error-message">{errors.author}</p>}
-      </div>
-      <div className="form-field">
-        <label htmlFor="category">카테고리</label>
-        <select
-          id="category"
-          value={form.category}
-          onChange={(event) => handleChange('category', event.target.value)}
-          required
-          aria-invalid={!!errors.category}
-          aria-describedby={errors.category ? 'category-error' : undefined}
-        >
-          <option value="">카테고리를 선택하세요</option>
-          {CATEGORIES.map((category) => <option key={category} value={category}>{category}</option>)}
-        </select>
-        {errors.category && <p id="category-error" className="error-message">{errors.category}</p>}
-      </div>
-      <div className="form-field">
-        <label htmlFor="rating">별점</label>
-        <select
-          id="rating"
-          value={form.rating}
-          onChange={(event) => handleChange('rating', event.target.value)}
-          required
-          aria-invalid={!!errors.rating}
-          aria-describedby={errors.rating ? 'rating-error' : undefined}
-        >
-          <option value="">별점을 선택하세요</option>
-          {[5, 4, 3, 2, 1].map((score) => <option key={score} value={score}>{'★'.repeat(score)} ({score}점)</option>)}
-        </select>
-        {errors.rating && <p id="rating-error" className="error-message">{errors.rating}</p>}
-      </div>
-      <div className="form-field">
-        <div className="field-header">
-          <label htmlFor="content">내용</label>
-          <span className="char-count">{form.content.length} / {CONTENT_MAX}</span>
-        </div>
-        <textarea
+  return <Box component="section" sx={{ maxWidth: 680, mx: 'auto' }}>
+    <Typography variant="h5" component="h1" sx={{ mb: 3 }}>{book ? '도서 수정' : '새 도서 등록'}</Typography>
+    <Box component="form" noValidate onSubmit={handleSubmit} sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
+      <TextField
+        id="title"
+        label="제목"
+        value={form.title}
+        onChange={(event) => handleChange('title', event.target.value)}
+        placeholder="도서 제목을 입력하세요"
+        required
+        error={!!errors.title}
+        helperText={errors.title}
+      />
+      <TextField
+        id="author"
+        label="저자"
+        value={form.author}
+        onChange={(event) => handleChange('author', event.target.value)}
+        placeholder="저자를 입력하세요"
+        required
+        error={!!errors.author}
+        helperText={errors.author}
+      />
+      <TextField
+        id="category"
+        select
+        label="카테고리"
+        value={form.category}
+        onChange={(event) => handleChange('category', event.target.value)}
+        required
+        error={!!errors.category}
+        helperText={errors.category}
+      >
+        <MenuItem value="">카테고리를 선택하세요</MenuItem>
+        {CATEGORIES.map((category) => <MenuItem key={category} value={category}>{category}</MenuItem>)}
+      </TextField>
+      <TextField
+        id="rating"
+        select
+        label="별점"
+        value={form.rating}
+        onChange={(event) => handleChange('rating', event.target.value)}
+        required
+        error={!!errors.rating}
+        helperText={errors.rating}
+      >
+        <MenuItem value="">별점을 선택하세요</MenuItem>
+        {[5, 4, 3, 2, 1].map((score) => <MenuItem key={score} value={score}>{'★'.repeat(score)} ({score}점)</MenuItem>)}
+      </TextField>
+      <Box>
+        <TextField
           id="content"
+          label="내용"
           value={form.content}
           onChange={(event) => handleChange('content', event.target.value)}
           placeholder="도서의 내용을 입력하세요"
-          rows="8"
+          multiline
+          rows={8}
+          fullWidth
           required
-          maxLength={CONTENT_MAX}
-          aria-invalid={!!errors.content}
-          aria-describedby={errors.content ? 'content-error' : undefined}
+          error={!!errors.content}
+          helperText={errors.content}
+          slotProps={{ htmlInput: { maxLength: CONTENT_MAX } }}
         />
-        {errors.content && <p id="content-error" className="error-message">{errors.content}</p>}
-      </div>
-      <label htmlFor="cover">표지 이미지 URL (선택)</label>
-      <input id="cover" type="url" value={form.coverImageUrl} onChange={(event) => setForm({ ...form, coverImageUrl: event.target.value })} placeholder="https://example.com/cover.jpg" />
-      <div className="form-actions">
-        <button type="button" className="button light" onClick={onCancel}>취소</button>
-        <button className="button primary">저장</button>
-      </div>
-    </form>
-  </section>
+        <Typography variant="caption" color="text.secondary" sx={{ display: 'block', textAlign: 'right', mt: 0.5 }}>{form.content.length} / {CONTENT_MAX}</Typography>
+      </Box>
+      <TextField id="cover" type="url" label="표지 이미지 URL (선택)" value={form.coverImageUrl} onChange={(event) => setForm({ ...form, coverImageUrl: event.target.value })} placeholder="https://example.com/cover.jpg" />
+      <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 1 }}>
+        <Button type="button" variant="outlined" color="inherit" onClick={onCancel} sx={{ borderColor: '#E6E6E6' }}>취소</Button>
+        <Button type="submit" variant="contained" disableElevation>저장</Button>
+      </Box>
+    </Box>
+  </Box>
 }
 
 export default BookForm
