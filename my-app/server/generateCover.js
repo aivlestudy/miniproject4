@@ -74,7 +74,13 @@ export function createGenerateCoverHandler(apiKey) {
       if (response.status === 429) {
         return reply(429, { error: 'OpenAI 사용 한도를 확인하고 잠시 후 다시 시도해 주세요.' })
       }
-      if (!response.ok) return reply(502, { error: 'OpenAI에서 표지 생성에 실패했습니다.' })
+      if (!response.ok) {
+        const failure = await response.json().catch(() => null)
+        if (failure?.error?.code === 'moderation_blocked') {
+          return reply(400, { error: 'OpenAI 안전 필터에 걸렸습니다. 책 내용을 바꾸거나 다시 시도해 주세요.' })
+        }
+        return reply(502, { error: 'OpenAI에서 표지 생성에 실패했습니다.' })
+      }
 
       const image = await response.json().catch(() => null)
       // TODO 5: b64_json을 추출해 React에 전달하고 Data URL로 변환
