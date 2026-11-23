@@ -92,7 +92,6 @@ cd my-app && npm install && npm run dev
 OPEN_API_KEY=sk-...
 ```
 
-- 변수 이름은 `OPENAI_API_KEY`가 아니라 `OPEN_API_KEY`입니다.
 - 표지 생성은 `npm run dev`에서만 동작합니다. (`build`/`preview` 결과물은 미지원)
 
 ## API 명세
