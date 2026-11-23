@@ -13,7 +13,8 @@ function OpenBook({ left, right }) {
       display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 2,
       // 가운데 접히는 부분 그림자
       background: { sm: 'linear-gradient(90deg, #ffffff 82%, #efeee9)' },
-      borderRight: { sm: '1px solid #e6e6e2' }, borderBottom: { xs: '1px solid #e6e6e2', sm: 'none' },
+      // 모바일은 아래쪽, 넓은 화면은 오른쪽에 구분선 (두께: 위 오른쪽 아래 왼쪽)
+      borderStyle: 'solid', borderColor: 'divider', borderWidth: { xs: '0 0 1px 0', sm: '0 1px 0 0' },
     }}>
       {left}
     </Box>

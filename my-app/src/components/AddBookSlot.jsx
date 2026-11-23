@@ -5,7 +5,7 @@ import AddIcon from '@mui/icons-material/Add'
 
 // 선반 끝의 빈 자리 (누르면 새 도서 등록) — BookItem과 같은 높이 구조
 function AddBookSlot({ onCreate }) {
-  return <ButtonBase onClick={onCreate} sx={{ width: 124, height: 264, pt: '24px', flexDirection: 'column', justifyContent: 'flex-start' }}>
+  return <ButtonBase onClick={onCreate} sx={{ width: 124, height: 280, pt: 3, flexDirection: 'column', justifyContent: 'flex-start' }}>
     <Box sx={{
       width: 120, height: 180, borderRadius: 1,
       border: '2px dashed', borderColor: '#9aa3b5', bgcolor: 'rgba(255,255,255,.6)', color: 'primary.light',
