@@ -3,13 +3,13 @@ import RatingStars from './RatingStars'
 import formatDate from '../utils/formatDate'
 
 // 도서 상세 화면 (수정/삭제 + AI 표지 생성 영역)
-function BookDetail({ book, onEdit, onDelete, onBack, onGenerateCover }) {
+function BookDetail({ book, onEdit, onDelete, onBack, onGenerateCover, coverBusy, generating }) {
   return <section className="detail">
     <div className="detail-heading">
       <h1>{book.title}</h1>
       <div>
-        <button className="button edit" onClick={onEdit}>수정</button>
-        <button className="button delete" onClick={onDelete}>삭제</button>
+        <button className="button edit" onClick={onEdit} disabled={generating}>수정</button>
+        <button className="button delete" onClick={onDelete} disabled={generating}>삭제</button>
       </div>
     </div>
     <div className="detail-layout">
@@ -18,7 +18,22 @@ function BookDetail({ book, onEdit, onDelete, onBack, onGenerateCover }) {
         <div className="ai-panel">
           <h2>AI 표지 생성</h2>
           <p>도서 내용에 어울리는 표지를 만들어 보세요.</p>
-          <button className="button light" onClick={onGenerateCover}>AI 표지 생성</button>
+          <form onSubmit={(event) => {
+            event.preventDefault()
+            onGenerateCover(new FormData(event.currentTarget).get('quality'))
+          }}>
+            <label>
+              이미지 품질{' '}
+              <select name="quality" defaultValue="medium" disabled={coverBusy}>
+                <option value="low">LOW</option>
+                <option value="medium">MEDIUM</option>
+                <option value="high">HIGH</option>
+              </select>
+            </label>{' '}
+            <button className="button light" disabled={coverBusy}>
+              {generating ? '생성 중…' : 'AI 표지 생성'}
+            </button>
+          </form>
         </div>
         <div className="description">
           <h2>책 내용</h2>

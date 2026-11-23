@@ -15,6 +15,7 @@ function App() {
   const [search, setSearch] = useState('')
   const [notice, setNotice] = useState('')
   const [loading, setLoading] = useState(true)
+  const [generatingId, setGeneratingId] = useState(null)
   const selected = books.find((book) => String(book.id) === String(selectedId))
   const filtered = books.filter((book) => (book.title + book.author + book.content).toLowerCase().includes(search.toLowerCase()))
 
@@ -73,6 +74,46 @@ function App() {
     } catch { setNotice('삭제에 실패했습니다. 서버 연결을 확인해 주세요.') }
   }
 
+  async function handleGenerateCover(quality) {
+    if (!selected || generatingId !== null) return
+    const { id, title, author, content } = selected
+    setGeneratingId(id)
+    setNotice('')
+
+    try {
+      const response = await fetch('/api/generate-cover', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          title: title.slice(0, 300),
+          author: typeof author === 'string' ? author.trim().slice(0, 200) : '',
+          content: content.slice(0, 3000),
+          quality,
+        }),
+      })
+      const image = await response.json().catch(() => null)
+      if (!response.ok || !image?.b64_json) {
+        throw new Error(image?.error ?? '표지 생성 응답을 읽을 수 없습니다.')
+      }
+
+      const coverImageUrl = `data:image/png;base64,${image.b64_json}`
+      const saved = await fetch(`${API}/${encodeURIComponent(id)}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ coverImageUrl }),
+      }).catch(() => null)
+      if (!saved?.ok) throw new Error('표지 저장에 실패했습니다. json-server 0.17.4 실행 상태를 확인해 주세요.')
+
+      setBooks((current) => current.map((book) =>
+        book.id === id ? { ...book, coverImageUrl } : book))
+      setNotice('AI 표지를 저장했습니다.')
+    } catch (error) {
+      setNotice(error instanceof TypeError ? '표지 생성 서버에 연결할 수 없습니다.' : error.message)
+    } finally {
+      setGeneratingId(null)
+    }
+  }
+
   return <div className="book-app">
     <Header onNavigate={go} onCreate={handleCreate} />
     <main className="page-content">
@@ -80,7 +121,7 @@ function App() {
       {page === 'home' && <Home onNavigate={go} />}
       {page === 'list' && <BookList books={filtered} loading={loading} search={search} onSearch={setSearch} onSelect={handleSelect} onCreate={handleCreate} />}
       {page === 'form' && <BookForm book={selected} onSubmit={handleSave} onCancel={() => go(selected ? 'detail' : 'list')} />}
-      {page === 'detail' && selected && <BookDetail book={selected} onEdit={() => go('form')} onDelete={handleDelete} onBack={() => go('list')} onGenerateCover={() => setNotice('AI 표지 생성을 위해 OpenAI API와 서버를 연결해주세요.')} />}
+      {page === 'detail' && selected && <BookDetail book={selected} onEdit={() => go('form')} onDelete={handleDelete} onBack={() => go('list')} onGenerateCover={handleGenerateCover} coverBusy={generatingId !== null} generating={generatingId === selected.id} />}
     </main>
   </div>
 }
