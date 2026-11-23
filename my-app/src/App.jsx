@@ -36,10 +36,10 @@ function App() {
   const filtered = searched.filter((book) => category === '전체' || book.category === category)
   // 정렬 (원본을 바꾸지 않도록 복사본을 정렬)
   const sorted = [...filtered].sort((a, b) => {
-    if (sort === 'oldest') return a.createdAt.localeCompare(b.createdAt)
+    if (sort === 'oldest') return (a.createdAt || '').localeCompare(b.createdAt || '')
     if (sort === 'rating') return b.rating - a.rating
     if (sort === 'title') return a.title.localeCompare(b.title, 'ko')
-    return b.createdAt.localeCompare(a.createdAt) // 최신순
+    return (b.createdAt || '').localeCompare(a.createdAt || '') // 최신순
   })
 
   // 도서 목록 불러오기 (GET /books) — 처음 화면이 뜰 때 한 번
