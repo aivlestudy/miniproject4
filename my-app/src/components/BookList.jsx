@@ -4,6 +4,7 @@ import InputAdornment from '@mui/material/InputAdornment'
 import Typography from '@mui/material/Typography'
 import CircularProgress from '@mui/material/CircularProgress'
 import Chip from '@mui/material/Chip'
+import MenuItem from '@mui/material/MenuItem'
 import SearchIcon from '@mui/icons-material/Search'
 import CATEGORIES from '../utils/categories'
 import BookItem from './BookItem'
@@ -13,8 +14,8 @@ import AddBookSlot from './AddBookSlot'
 const SHELF_BACKGROUND = 'repeating-linear-gradient(to bottom, transparent 0 204px, #e2cfae 204px 212px, #cdb18a 212px 220px, rgba(27,42,74,.08) 220px 224px, transparent 224px 264px)'
 
 // 첫 화면: 서가 (검색 + 책 + 빈 자리)
-// searchedBooks: 검색어만 적용한 목록 (탭별 권수 계산용) / books: 검색어 + 카테고리 적용한 목록
-function BookList({ books, searchedBooks, loading, search, onSearch, category, onCategory, onSelect, onCreate }) {
+// searchedBooks: 검색어만 적용한 목록 (탭별 권수 계산용) / books: 검색어 + 카테고리 + 정렬 적용한 목록
+function BookList({ books, searchedBooks, loading, search, onSearch, category, onCategory, sort, onSort, onSelect, onCreate }) {
   // 탭별 권수
   function countOf(item) {
     return item === '전체' ? searchedBooks.length : searchedBooks.filter((book) => book.category === item).length
@@ -31,8 +32,8 @@ function BookList({ books, searchedBooks, loading, search, onSearch, category, o
         sx={{ width: '100%', maxWidth: 420, '& .MuiOutlinedInput-root': { borderRadius: 999, bgcolor: 'background.paper' } }}
         slotProps={{ input: { startAdornment: <InputAdornment position="start"><SearchIcon /></InputAdornment> } }}
       />
-      {/* 카테고리 분류 탭 */}
-      <Box sx={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center', gap: 1 }}>
+      {/* 카테고리 분류 탭 + 정렬 */}
+      <Box sx={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center', alignItems: 'center', gap: 1 }}>
         {['전체', ...CATEGORIES].map((item) => <Chip
           key={item} clickable
           label={<>{item}<Box component="span" sx={{ ml: 0.75, opacity: 0.7, fontWeight: 400 }}>{loading ? '' : countOf(item)}</Box></>}
@@ -40,6 +41,16 @@ function BookList({ books, searchedBooks, loading, search, onSearch, category, o
           onClick={() => onCategory(item)}
           sx={{ fontWeight: 700, bgcolor: category === item ? undefined : 'background.paper' }}
         />)}
+        <TextField
+          select size="small" value={sort} onChange={(event) => onSort(event.target.value)}
+          aria-label="정렬"
+          sx={{ ml: 1, '& .MuiOutlinedInput-root': { borderRadius: 999, bgcolor: 'background.paper', fontSize: 14, height: 32 } }}
+        >
+          <MenuItem value="newest">최신순</MenuItem>
+          <MenuItem value="oldest">오래된순</MenuItem>
+          <MenuItem value="rating">별점 높은순</MenuItem>
+          <MenuItem value="title">제목순</MenuItem>
+        </TextField>
       </Box>
     </Box>
 
