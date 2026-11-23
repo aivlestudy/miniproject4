@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
-import './App.css'
+import Container from '@mui/material/Container'
+import Snackbar from '@mui/material/Snackbar'
 import Header from './components/Header'
-import Home from './components/Home'
 import BookList from './components/BookList'
 import BookForm from './components/BookForm'
 import BookDetail from './components/BookDetail'
@@ -10,14 +10,25 @@ const API = 'http://localhost:3000/books'
 
 function App() {
   const [books, setBooks] = useState([])
-  const [page, setPage] = useState('home')
+  const [page, setPage] = useState('list')
   const [selectedId, setSelectedId] = useState(null)
   const [search, setSearch] = useState('')
+  const [category, setCategory] = useState('전체')
+  const [sort, setSort] = useState('newest')
   const [notice, setNotice] = useState('')
   const [loading, setLoading] = useState(true)
   const [generatingId, setGeneratingId] = useState(null)
   const selected = books.find((book) => String(book.id) === String(selectedId))
-  const filtered = books.filter((book) => (book.title + book.author + book.content).toLowerCase().includes(search.toLowerCase()))
+  // 검색어로 거르기 → 카테고리로 거르기
+  const searched = books.filter((book) => (book.title + book.author + book.content).toLowerCase().includes(search.toLowerCase()))
+  const filtered = searched.filter((book) => category === '전체' || book.category === category)
+  // 정렬 (원본을 바꾸지 않도록 복사본을 정렬)
+  const sorted = [...filtered].sort((a, b) => {
+    if (sort === 'oldest') return a.createdAt.localeCompare(b.createdAt)
+    if (sort === 'rating') return b.rating - a.rating
+    if (sort === 'title') return a.title.localeCompare(b.title, 'ko')
+    return b.createdAt.localeCompare(a.createdAt) // 최신순
+  })
 
   // 도서 목록 불러오기 (GET)
   useEffect(() => {
@@ -63,7 +74,7 @@ function App() {
 
   // 삭제(DELETE)
   async function handleDelete() {
-    if (!selected || !window.confirm('「' + selected.title + '」 도서를 삭제할까요?')) return
+    if (!selected) return // 삭제 확인은 BookDetail의 Dialog에서
     try {
       const response = await fetch(API + '/' + selected.id, { method: 'DELETE' })
       if (!response.ok) throw new Error()
@@ -114,16 +125,20 @@ function App() {
     }
   }
 
-  return <div className="book-app">
-    <Header onNavigate={go} onCreate={handleCreate} />
-    <main className="page-content">
-      {notice && <p className="notice" role="status">{notice}</p>}
-      {page === 'home' && <Home onNavigate={go} />}
-      {page === 'list' && <BookList books={filtered} loading={loading} search={search} onSearch={setSearch} onSelect={handleSelect} onCreate={handleCreate} />}
+  return <>
+    <Header page={page} onNavigate={go} />
+    <Container component="main" maxWidth="lg" sx={{ py: 4 }}>
+      {page === 'list' && <BookList books={sorted} searchedBooks={searched} loading={loading} search={search} onSearch={setSearch} category={category} onCategory={setCategory} sort={sort} onSort={setSort} onSelect={handleSelect} onCreate={handleCreate} />}
       {page === 'form' && <BookForm book={selected} onSubmit={handleSave} onCancel={() => go(selected ? 'detail' : 'list')} />}
-      {page === 'detail' && selected && <BookDetail book={selected} onEdit={() => go('form')} onDelete={handleDelete} onBack={() => go('list')} onGenerateCover={handleGenerateCover} coverBusy={generatingId !== null} generating={generatingId === selected.id} />}
-    </main>
-  </div>
+      {page === 'detail' && selected && <BookDetail book={selected} onEdit={() => go('form')} onDelete={handleDelete} onGenerateCover={handleGenerateCover} coverBusy={generatingId !== null} generating={generatingId === selected.id} />}
+    </Container>
+    {/* 알림 메시지 (아래쪽에 잠깐 떴다 사라짐) */}
+    <Snackbar
+      open={!!notice} message={notice} autoHideDuration={4000}
+      onClose={(event, reason) => { if (reason !== 'clickaway') setNotice('') }}
+      anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+    />
+  </>
 }
 
 export default App

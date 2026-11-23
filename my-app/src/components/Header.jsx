@@ -1,13 +1,22 @@
-// 공통 헤더 + 네비게이션
-function Header({ onNavigate, onCreate }) {
-  return <header className="site-header"><div className="header-inner">
-    <button className="brand" onClick={() => onNavigate('home')}>도서관리</button>
-    <nav aria-label="주 메뉴">
-      <button onClick={() => onNavigate('home')}>홈</button>
-      <button onClick={() => onNavigate('list')}>도서 목록</button>
-      <button className="new-book" onClick={onCreate}>새 도서 등록</button>
-    </nav>
-  </div></header>
+import AppBar from '@mui/material/AppBar'
+import Toolbar from '@mui/material/Toolbar'
+import Typography from '@mui/material/Typography'
+import Button from '@mui/material/Button'
+import ButtonBase from '@mui/material/ButtonBase'
+import ArrowBackIcon from '@mui/icons-material/ArrowBack'
+import Logo from './Logo'
+
+// 상단 바 (서가가 아닌 화면에서는 '홈' 버튼)
+function Header({ page, onNavigate }) {
+  return <AppBar position="sticky" elevation={0} sx={{ bgcolor: 'background.paper', color: 'primary.main', borderBottom: 1, borderColor: 'divider' }}>
+    <Toolbar sx={{ maxWidth: 1100, width: '100%', mx: 'auto' }}>
+      <ButtonBase onClick={() => onNavigate('list')} sx={{ gap: 1.25, flexGrow: 1, justifyContent: 'flex-start', alignItems: 'center' }}>
+        <Logo size={32} />
+        <Typography variant="h6" component="span">AIVLE 서재</Typography>
+      </ButtonBase>
+      {page !== 'list' && <Button startIcon={<ArrowBackIcon />} onClick={() => onNavigate('list')}>홈</Button>}
+    </Toolbar>
+  </AppBar>
 }
 
 export default Header
