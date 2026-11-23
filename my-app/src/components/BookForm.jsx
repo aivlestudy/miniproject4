@@ -21,7 +21,7 @@ function BookForm({ book, onSubmit, onCancel }) {
     title: book?.title || '',
     author: book?.author || '',
     content: book?.content || '',
-    coverImageUrl: book?.coverImageUrl || '', // 입력칸은 없지만 수정 시 기존 표지 유지
+    coverImageUrl: book?.coverImageUrl || '', // 표지 미리보기용 (저장할 때는 보내지 않음)
     rating: book?.rating || '',
     category: book?.category || '',
   })
