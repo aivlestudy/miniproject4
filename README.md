@@ -192,6 +192,7 @@ sequenceDiagram
 
 ### [도서 상세 및 AI표지 생성]
 <img width="1280" height="800" alt="image14" src="https://github.com/user-attachments/assets/54730104-2707-4235-b628-92d79a4f2bb4" />
+
 **도서상세 및 AI 표지 생성**
 - GPT Image2로 만든 표지를 상세 및 목록에 표시
 - 품질 선택 후 AI 표지 생성
