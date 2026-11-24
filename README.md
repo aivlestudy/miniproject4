@@ -174,3 +174,50 @@ sequenceDiagram
 ## 참고
 
 - 표지는 base64 Data URL로 `db.json`에 저장되므로 파일 크기가 크게 늘어납니다.
+
+## 실행화면
+
+### [도서목록]
+<img width="1280" height="800" alt="image12" src="https://github.com/user-attachments/assets/f803e410-0ef4-49e1-94aa-111fa3641e74" />
+
+**전체목록**
+- 책장처럼 꽃힌 카드로 표지,제목,별점 등록일 표시
+- 새 책 꽃기 슬롯에서 바로 등록 화면으로 이동
+
+<img width="1280" height="800" alt="image13" src="https://github.com/user-attachments/assets/7ac85f1b-7815-4707-80b8-4eb05e769eae" />
+
+**카테고리 필터 및 검색**
+- 카테고리 별 권수 표시, 선택하면 해당 도서만 표시
+- 제목, 저자, 내용검색, 정렬 4종
+
+### [도서 상세 및 AI표지 생성]
+<img width="1280" height="800" alt="image14" src="https://github.com/user-attachments/assets/54730104-2707-4235-b628-92d79a4f2bb4" />
+**도서상세 및 AI 표지 생성**
+- GPT Image2로 만든 표지를 상세 및 목록에 표시
+- 품질 선택 후 AI 표지 생성
+- API키는 .env 키로 생성하여 따로 보관
+
+<img width="1280" height="800" alt="image15" src="https://github.com/user-attachments/assets/75c7d94d-b6f0-4d29-90f1-4a035cb2a952" />
+
+**삭제 확인 모달**
+- 삭제 전 확인창으로 실수 방지
+- 삭제하면 목록으로 바로 이동으로 바로 반영
+
+### [도서 등록 및 수정]
+<img width="1280" height="800" alt="image16" src="https://github.com/user-attachments/assets/236653ff-5f5c-4478-b208-6e26628ad8f0" />
+
+**도서 등록**
+- 제목, 저자, 카테고리, 별점, 내용 등 필수 입력을 검증
+- 내용(본문) 글자수 검증 및 표시(1000자)
+
+<img width="1280" height="800" alt="image17" src="https://github.com/user-attachments/assets/f3cfa710-38fc-4bef-87ae-205d5ff20a9a" />
+
+**도서 수정**
+- 기존 정보가 입력된 상태로 폼 열림
+- 저장하면 PATCH로 수정, 수정일 갱신
+
+
+
+
+
+
